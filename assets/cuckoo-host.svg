@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f2f0e8" />
+      <stop offset="100%" stop-color="#e2f0ec" />
+    </linearGradient>
+    <linearGradient id="nest" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c97a2f" />
+      <stop offset="100%" stop-color="#9f5a1f" />
+    </linearGradient>
+  </defs>
+
+  <rect width="640" height="400" fill="url(#bg)" />
+
+  <ellipse cx="320" cy="280" rx="230" ry="70" fill="url(#nest)" opacity="0.95" />
+  <ellipse cx="320" cy="265" rx="200" ry="55" fill="#b56a27" opacity="0.92" />
+
+  <path d="M140 270 C220 230, 300 230, 380 260" fill="none" stroke="#7f4717" stroke-width="10" stroke-linecap="round" />
+  <path d="M180 300 C250 265, 330 265, 410 290" fill="none" stroke="#6b3a12" stroke-width="12" stroke-linecap="round" />
+
+  <ellipse cx="300" cy="250" rx="36" ry="28" fill="#f4e8d0" stroke="#d6c2a2" stroke-width="3" />
+  <ellipse cx="360" cy="255" rx="32" ry="24" fill="#f0ddbd" stroke="#d0b695" stroke-width="3" />
+
+  <path d="M400 170 C420 130, 470 120, 520 150 C480 165, 450 190, 420 210" fill="#1f5c8c" opacity="0.92" />
+  <circle cx="460" cy="150" r="10" fill="#f6e7c4" />
+  <circle cx="464" cy="147" r="3" fill="#1d2b2a" />
+  <path d="M470 150 L495 155" stroke="#d4771c" stroke-width="4" stroke-linecap="round" />
+</svg>
