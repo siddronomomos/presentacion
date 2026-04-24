@@ -3,12 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cuckoo Search - Presentacion</title>
-    <meta name="description" content="Presentacion extensa sobre Cuckoo Search con demo 2D y 3D en vivo.">
+    <title>Cuckoo Search - Presentación</title>
+    <meta name="description" content="Presentación extensa sobre Cuckoo Search con demo 2D y 3D en vivo.">
     <link rel="icon" href="data:,">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
     <link rel="stylesheet" href="styles.css">
     <script type="importmap">
       {
@@ -18,6 +19,8 @@
         }
       }
     </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
   </head>
   <body>
     <div class="backdrop" aria-hidden="true"></div>
@@ -26,11 +29,20 @@
       <section class="slide hero" id="inicio">
         <div class="hero-content">
           <div class="hero-text reveal">
-            <p class="eyebrow">Presentacion tecnica</p>
-            <h1>Cuckoo Search: metaheuristica inspirada en cucos y vuelos Levy</h1>
+            <p class="eyebrow">Algoritmos metaheurísticos</p>
+            <h1>Cuckoo Search</h1>
             <p>
-              Un recorrido completo por el algoritmo: origen biologico, fundamentos matematicos,
-              parametros, fortalezas, limites y una demo 2D/3D en vivo para fines de presentacion.
+              Un recorrido completo por el algoritmo: origen biológico, fundamentos matemáticos,
+              parámetros, fortalezas, límites y una demo 2D/3D en vivo para fines de presentación.
+              <p>
+                Alcocer Camarena Christopher.
+              </p>
+              <p>
+                Abarca Núñez Antonio
+              </p>
+              <p>
+                Padilla González Fernando Daniel
+              </p>
             </p>
             <div class="hero-actions">
               <a class="btn" href="#demo">Ver demo en vivo</a>
@@ -49,7 +61,7 @@
             </div>
             <div class="stat">
               <span class="stat-number">Levy</span>
-              <span class="stat-label">Exploracion de largo alcance</span>
+              <span class="stat-label">Exploración de largo alcance</span>
             </div>
             <div class="stat">
               <span class="stat-number">CS</span>
@@ -62,26 +74,33 @@
       <section id="intro" class="slide section">
         <div class="section-grid">
           <div class="section-text reveal">
-            <h2>Que es Cuckoo Search</h2>
+            <h2>Qué es Cuckoo Search</h2>
             <p>
-              Cuckoo Search (CS) es un algoritmo metaheuristico de optimizacion global. Modela un
-              conjunto de nidos, donde cada nido representa una solucion candidata. La idea central
+              Cuckoo Search (CS) es un algoritmo metaheurístico de optimización global. Modela un
+              conjunto de nidos, donde cada nido representa una solución candidata. La idea central
               es generar nuevas soluciones con vuelos Levy (saltos de longitud variable) y reemplazar
-              soluciones peores con soluciones mejores. Esta dinamica favorece la exploracion sin
-              perder la explotacion local.
+              soluciones peores con soluciones mejores. Esta dinámica favorece la exploración sin
+              perder la explotación local.
             </p>
             <p>
-              CS es util para problemas continuos, discretos o combinatorios, y puede hibridarse con
-              busquedas locales o tecnicas de aprendizaje. Su popularidad proviene de su simplicidad,
-              pocos parametros y buen equilibrio entre exploracion y explotacion.
+              CS es útil para problemas continuos, discretos o combinatorios, y puede hibridarse con
+              búsquedas locales o técnicas de aprendizaje. Su popularidad proviene de su simplicidad,
+              pocos parámetros y buen equilibrio entre exploración y explotación.
             </p>
-            <div class="callout">
-              <h3>Idea en una frase</h3>
-              <p>Un cuco deja un huevo en un nido aleatorio; si el huevo es mejor, el nido lo conserva.</p>
-            </div>
+            <h3>Componentes del modelo</h3>
+            <ul>
+              <li>Nido = solución candidata.</li>
+              <li>Huevo = nueva propuesta generada desde un nido.</li>
+              <li>Fitness = calidad de la solución (qué tan buena es).</li>
+              <li><span class="badge">pa</span> controla cuántos nidos se reemplazan.</li>
+            </ul>
+            <p>
+              El algoritmo mantiene un número fijo de nidos y solo reemplaza aquellos que resultan
+              peores en comparaciones locales, lo que evita un crecimiento descontrolado de población.
+            </p>
           </div>
           <figure class="section-media reveal">
-            <img src="assets/cuckoo-nest.svg" alt="Ilustracion estilizada de un nido con huevos">
+            <img src="assets/cuckoo-nest.svg" alt="Ilustración estilizada de un nido con huevos">
             <figcaption>Nidos = soluciones. Huevos = nuevas propuestas.</figcaption>
           </figure>
         </div>
@@ -96,15 +115,15 @@
           <div class="section-text reveal">
             <h2>Origen y creadores</h2>
             <p>
-              El algoritmo fue propuesto por Xin-She Yang y Suash Deb en 2009. Su articulo inicial,
-              "Cuckoo Search via Levy Flights", presento la idea de combinar parasitismo de puesta con
-              vuelos Levy para optimizacion global. Posteriormente, el metodo fue refinado y aplicado
-              en numerosos estudios y dominios de ingenieria.
+              El algoritmo fue propuesto por Xin-She Yang y Suvash Deb en 2009. Su artículo inicial,
+              "Cuckoo Search via Levy Flights", presentó la idea de combinar parasitismo de puesta con
+              vuelos Levy para optimización global. Posteriormente, el método fue refinado y aplicado
+              en numerosos estudios y dominios de ingeniería.
             </p>
             <div class="timeline">
               <div class="timeline-item">
                 <span class="time">2009</span>
-                <span class="event">Presentacion de CS y su formulacion basica.</span>
+                <span class="event">Presentación de CS y su formulación básica.</span>
               </div>
               <div class="timeline-item">
                 <span class="time">2010</span>
@@ -112,7 +131,7 @@
               </div>
               <div class="timeline-item">
                 <span class="time">2012+</span>
-                <span class="event">Variantes binarias, multiobjetivo e hibridas.</span>
+                <span class="event">Variantes binarias, multiobjetivo e híbridas.</span>
               </div>
             </div>
           </div>
@@ -122,20 +141,20 @@
       <section id="inspiracion" class="slide section">
         <div class="section-grid">
           <div class="section-text reveal">
-            <h2>Inspiracion biologica</h2>
+            <h2>Inspiración biológica</h2>
             <p>
               Algunas especies de cucos no construyen nidos propios. En cambio, depositan sus huevos
               en nidos de otras aves. Los anfitriones pueden descubrir los huevos ajenos con cierta
               probabilidad y, si lo hacen, los expulsan o abandonan el nido.
             </p>
             <ul>
-              <li>Cada nido contiene un huevo (una solucion candidata).</li>
-              <li>Los mejores huevos pasan a la siguiente generacion.</li>
+              <li>Cada nido contiene un huevo (una solución candidata).</li>
+              <li>Los mejores huevos pasan a la siguiente generación.</li>
               <li>Con probabilidad <span class="badge">pa</span>, un nido detecta el huevo y se reemplaza.</li>
             </ul>
             <p>
-              Esta analogia permite un mecanismo simple de reemplazo competitivo y un control natural
-              sobre el porcentaje de exploracion.
+              Esta analogía permite un mecanismo simple de reemplazo competitivo y un control natural
+              sobre el porcentaje de exploración.
             </p>
           </div>
           <figure class="section-media reveal">
@@ -152,17 +171,72 @@
             <figcaption>Un vuelo Levy combina muchos pasos cortos y algunos largos.</figcaption>
           </figure>
           <div class="section-text reveal">
-            <h2>Vuelos Levy y balance exploracion-explotacion</h2>
+            <h2>Vuelos Levy y balance exploración-explotación</h2>
             <p>
-              Los vuelos Levy son caminatas aleatorias con distribucion de pasos de cola pesada. Esto
-              genera muchos pasos cortos (explotacion local) y, de vez en cuando, saltos largos
-              (exploracion global). En optimizacion, esta mezcla ayuda a escapar de minimos locales
+              Los vuelos Levy son caminatas aleatorias con distribución de pasos de cola pesada. Esto
+              genera muchos pasos cortos (explotación local) y, de vez en cuando, saltos largos
+              (exploración global). En optimización, esta mezcla ayuda a escapar de mínimos locales
               sin perder velocidad de convergencia.
             </p>
-            <div class="callout">
-              <h3>Intuicion</h3>
-              <p>Exploras la zona actual la mayor parte del tiempo, pero cada tanto das un salto largo.</p>
-            </div>
+            <p>
+              Formalmente, la longitud de paso \(L\) sigue una ley de potencia:
+              $$p(L) \propto L^{-(1+\beta)},\; 0 < \beta \le 2$$
+              Esto genera colas pesadas: la mayoría de los pasos son cortos, pero ocasionalmente
+              aparecen saltos largos que exploran zonas nuevas del espacio.
+            </p>
+            <p>
+              En la práctica, CS suele usar el método de Mantegna para muestrear los pasos de Levy
+              (combina dos normales para obtener la cola pesada) y aplica el salto en cada dimensión.
+            </p>
+            <ul>
+              <li>Si \(\beta\) se acerca a 2, el comportamiento se parece a un paseo gaussiano.</li>
+              <li>Con \(\beta\) más pequeño, hay más saltos largos y mayor exploración.</li>
+              <li><span class="badge">alpha</span> escala el tamaño del salto según la magnitud del problema.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="levy-detalle" class="slide section">
+        <div class="section-grid">
+          <div class="section-text reveal">
+            <h2>Levy Flight en detalle</h2>
+            <p>
+              En CS, cada nido genera un salto aleatorio para proponer un huevo nuevo. Ese salto se
+              calcula con una distribución de cola pesada, que favorece pasos cortos frecuentes y
+              pasos largos ocasionales.
+            </p>
+            <h3>Significado de símbolos</h3>
+            <ul>
+              <li>\(L\): longitud del salto (tamaño del paso).</li>
+              <li>\(p(L)\): probabilidad de observar un salto de tamaño \(L\).</li>
+              <li>\(\beta\): controla qué tan pesada es la cola (más pequeño = más saltos largos).</li>
+              <li>\(\alpha\): factor de escala para ajustar el salto al tamaño del problema.</li>
+              <li>\(x\): posición actual; \(x'\) es la nueva posición propuesta.</li>
+            </ul>
+            <p>
+              Una forma común de aplicar el salto es: \(x' = x + \alpha L\). En problemas con varias
+              dimensiones, se aplica el salto por componente y luego se recorta a los límites válidos.
+            </p>
+          </div>
+          <div class="section-text reveal">
+            <h3>Ejemplos de tamaño de salto</h3>
+            <ul>
+              <li>Salto corto: \(L\) pequeño, por ejemplo \(L \approx 0.1\). El nido se mueve cerca de su zona actual.</li>
+              <li>Salto largo: \(L\) grande, por ejemplo \(L \approx 3\) o más. El nido explora otra región.</li>
+            </ul>
+            <p>
+              Esto explica la mezcla de explotación (pasos cortos) y exploración (pasos largos) en el
+              mismo algoritmo.
+            </p>
+            <h3>Método de Mantegna</h3>
+            <p>
+              Es una técnica para muestrear \(L\) con cola pesada. Genera dos variables normales
+              independientes \(u\) y \(v\), y luego calcula:
+              $$L = \frac{u}{|v|^{1/\beta}}$$
+              Con una constante \(\sigma\) que ajusta la varianza de \(u\). Este método produce saltos
+              pequeños la mayor parte del tiempo y, ocasionalmente, saltos muy grandes.
+            </p>
           </div>
         </div>
       </section>
@@ -174,12 +248,12 @@
             <ol class="steps">
               <li>Inicializa <span class="badge">n</span> nidos con soluciones aleatorias.</li>
               <li>Genera un nuevo huevo por vuelo Levy desde un nido.</li>
-              <li>Selecciona un nido aleatorio y reemplazalo si el nuevo huevo es mejor.</li>
-              <li>Abandona una fraccion <span class="badge">pa</span> de nidos peores y crea nuevos.</li>
+              <li>Selecciona un nido aleatorio y reemplázalo si el nuevo huevo es mejor.</li>
+              <li>Abandona una fracción <span class="badge">pa</span> de nidos peores y crea nuevos.</li>
               <li>Conserva el mejor nido y repite hasta detener.</li>
             </ol>
             <p>
-              El criterio de paro puede ser un maximo de iteraciones, un umbral de error o un
+              El criterio de paro puede ser un máximo de iteraciones, un umbral de error o un
               presupuesto de evaluaciones.
             </p>
           </div>
@@ -228,19 +302,19 @@ print("best", best)</code></pre>
       <section id="parametros" class="slide section alt">
         <div class="section-grid">
           <div class="section-text reveal">
-            <h2>Parametros clave</h2>
+            <h2>Parámetros clave</h2>
             <div class="pill-grid">
               <div class="pill">
-                <h4>n (numero de nidos)</h4>
-                <p>Controla diversidad. Tipico: 15 a 50.</p>
+                <h4>n (número de nidos)</h4>
+                <p>Controla diversidad. Típico: 15 a 50.</p>
               </div>
               <div class="pill">
                 <h4>pa (probabilidad de abandono)</h4>
-                <p>Define cuanto se renueva el conjunto. Tipico: 0.1 a 0.3.</p>
+                <p>Define cuánto se renueva el conjunto. Típico: 0.1 a 0.3.</p>
               </div>
               <div class="pill">
-                <h4>alpha (tamano de paso)</h4>
-                <p>Escala el salto de Levy. Ajusta exploracion.</p>
+                <h4>alpha (tamaño de paso)</h4>
+                <p>Escala el salto de Levy. Ajusta exploración.</p>
               </div>
               <div class="pill">
                 <h4>beta (cola Levy)</h4>
@@ -252,8 +326,8 @@ print("best", best)</code></pre>
             <h3>Buenas practicas</h3>
             <ul>
               <li>Normaliza variables para que el paso tenga escala coherente.</li>
-              <li>Usa <span class="badge">pa</span> mas alto al inicio y reduce si buscas refinamiento.</li>
-              <li>Combina CS con busqueda local para explotar el mejor nido.</li>
+              <li>Usa <span class="badge">pa</span> más alto al inicio y reduce si buscas refinamiento.</li>
+              <li>Combina CS con búsqueda local para explotar el mejor nido.</li>
             </ul>
             <p>Una regla simple es iniciar con diversidad alta y luego disminuir el salto para pulir soluciones.</p>
           </div>
@@ -265,49 +339,49 @@ print("best", best)</code></pre>
           <div class="section-text reveal">
             <h2>Propiedades y complejidad</h2>
             <p>
-              CS es estocastico, por lo que no garantiza el optimo global en cada ejecucion. Sin
-              embargo, en la practica ofrece un buen equilibrio entre busqueda amplia y refinamiento
+              CS es estocástico, por lo que no garantiza el óptimo global en cada ejecución. Sin
+              embargo, en la práctica ofrece un buen equilibrio entre búsqueda amplia y refinamiento
               local.
             </p>
             <ul>
-              <li>Complejidad aproximada: O(n * d * T), donde d es dimension y T iteraciones.</li>
-              <li>Pocos parametros y facil implementacion.</li>
-              <li>Buena capacidad para escapar de minimos locales.</li>
+              <li>Complejidad aproximada: O(n * d * T), donde d es dimensión y T iteraciones.</li>
+              <li>Pocos parámetros y fácil implementación.</li>
+              <li>Buena capacidad para escapar de mínimos locales.</li>
             </ul>
-            <h3>Resumen para presentar</h3>
+            <h3>Fortalezas y límites</h3>
             <ul>
-              <li>CS es una metaheuristica simple y potente para optimizacion global.</li>
-              <li>Se inspira en parasitismo de puesta y vuelos Levy.</li>
-              <li>Usa reemplazo competitivo y abandono parcial para explorar.</li>
-              <li>Tiene pocos parametros y se adapta a multiples dominios.</li>
+              <li>Robusto en funciones multimodales y no convexas.</li>
+              <li>No garantiza óptimo global; es un método estocástico.</li>
+              <li>El costo dominante es evaluar la función objetivo.</li>
+              <li>Si <span class="badge">pa</span> y <span class="badge">alpha</span> son muy bajos, puede estancarse.</li>
             </ul>
-            <h3>Cuando usarlo</h3>
+            <h3>Cuándo usarlo</h3>
             <p>
               Cuando el problema es no convexo, multimodal o no diferenciable, y se requiere un
-              metodo robusto con baja complejidad de implementacion. CS es una buena primera opcion
-              antes de modelos mas costosos.
+              método robusto con baja complejidad de implementación. CS es una buena primera opción
+              antes de modelos más costosos.
             </p>
           </div>
           <div class="section-text reveal">
-            <h3>Comparacion rapida</h3>
+            <h3>Comparación rápida</h3>
             <div class="compare-grid">
               <div class="compare-card">
                 <h4>CS</h4>
-                <p>Simple, balanceado, pocos parametros.</p>
+                <p>Simple, balanceado, pocos parámetros.</p>
               </div>
               <div class="compare-card">
                 <h4>PSO</h4>
-                <p>Rapido en problemas suaves, sensible a parametros.</p>
+                <p>Rápido en problemas suaves, sensible a parámetros.</p>
               </div>
               <div class="compare-card">
                 <h4>GA</h4>
-                <p>Flexible, pero suele requerir mas ajustes y operadores.</p>
+                <p>Flexible, pero suele requerir más ajustes y operadores.</p>
               </div>
             </div>
-            <div class="callout">
-              <h3>Mensaje clave</h3>
-              <p>Explora con saltos largos, refina con pasos cortos y reemplaza lo peor con lo mejor.</p>
-            </div>
+            <p>
+              La comparación depende del problema: CS tiende a ser competitivo cuando se busca un
+              equilibrio entre simplicidad y exploración global sin demasiados parámetros.
+            </p>
           </div>
         </div>
       </section>
@@ -319,65 +393,45 @@ print("best", best)</code></pre>
             <ul>
               <li>Binary Cuckoo Search para variables discretas.</li>
               <li>Multiobjective CS con frente de Pareto.</li>
-              <li>CS adaptativo con ajuste dinamico de alpha y pa.</li>
-              <li>Hibridos con busqueda local o gradiente.</li>
+              <li>CS adaptativo con ajuste dinámico de alpha y pa.</li>
+              <li>Híbridos con búsqueda local o gradiente.</li>
               <li>Versiones con nichos para mantener diversidad.</li>
             </ul>
           </div>
           <div class="section-text reveal">
             <h3>Aplicaciones reales</h3>
             <ul>
-              <li>Diseno de estructuras y parametros de control.</li>
-              <li>Seleccion de caracteristicas y ajuste de hiperparametros.</li>
-              <li>Ruteo, calendarizacion y problemas combinatorios.</li>
-              <li>Segmentacion y restauracion de imagenes.</li>
+              <li>Diseño de estructuras y parámetros de control.</li>
+              <li>Selección de características y ajuste de hiperparámetros.</li>
+              <li>Ruteo, calendarización y problemas combinatorios.</li>
+              <li>Segmentación y restauración de imágenes.</li>
             </ul>
-            <h3>Referencias basicas</h3>
-            <ol class="refs">
-              <li>Xin-She Yang, Suash Deb. "Cuckoo Search via Levy Flights", 2009.</li>
-              <li>Xin-She Yang, Suash Deb. "Engineering Optimization by Cuckoo Search", 2010.</li>
-              <li>Revisiones y variantes en literatura de optimizacion metaheuristica (2012+).</li>
-            </ol>
-            <p>
-              Estas referencias son suficientes para ubicar el algoritmo y justificar su uso en
-              presentaciones academicas o profesionales.
-            </p>
-            <h3>Notas para exponer</h3>
-            <ul>
-              <li>Define el problema, muestra la intuicion biologica, y luego el flujo del algoritmo.</li>
-              <li>Enfatiza el rol de los vuelos Levy como mecanismo de exploracion.</li>
-              <li>Usa la demo para explicar como los nidos se concentran cerca del minimo.</li>
-            </ul>
+            
           </div>
         </div>
       </section>
 
       <section id="demo-didactica" class="slide section demo didactic">
         <div class="section-header reveal">
-          <h2>Simulacion didactica paso a paso</h2>
-          <p>
-            Esta vista resalta el movimiento de los nidos. Cada paso dibuja flechas para mostrar
-            el desplazamiento y los reemplazos por abandono, con una leyenda de colores para guiar
-            la explicacion.
-          </p>
+          <h2>Simulación didáctica paso a paso</h2>
         </div>
         <div class="demo-grid didactic-grid">
           <div class="card demo-controls reveal">
-            <h3>Controles didacticos</h3>
-            <label for="fn-select-didactic">Funcion objetivo</label>
+            <h3>Controles didácticos</h3>
+            <label for="fn-select-didactic">Función objetivo</label>
             <select id="fn-select-didactic">
               <option value="rastrigin" selected>Rastrigin</option>
               <option value="ackley">Ackley</option>
               <option value="sphere">Sphere</option>
             </select>
 
-            <label for="nests-input-didactic">Numero de nidos</label>
-            <input id="nests-input-didactic" type="number" min="10" max="60" step="1" value="24">
+            <label for="nests-input-didactic">Número de nidos</label>
+            <input id="nests-input-didactic" type="number" min="1" max="60" step="1" value="24">
 
             <label for="pa-input-didactic">pa (probabilidad de abandono)</label>
             <input id="pa-input-didactic" type="number" min="0.05" max="0.5" step="0.05" value="0.25">
 
-            <label for="alpha-input-didactic">alpha (tamano de paso)</label>
+            <label for="alpha-input-didactic">alpha (tamaño de paso)</label>
             <input id="alpha-input-didactic" type="number" min="0.1" max="1.5" step="0.1" value="0.7">
 
             <label for="speed-input-didactic">Latencia (ms por paso)</label>
@@ -393,24 +447,24 @@ print("best", best)</code></pre>
             </div>
 
             <div class="readout">
-              <div><span class="label">Iteracion</span><span id="iter-value-didactic">0</span></div>
+              <div><span class="label">Iteración</span><span id="iter-value-didactic">0</span></div>
               <div><span class="label">Mejor valor</span><span id="best-value-didactic">--</span></div>
               <div><span class="label">Fase</span><span id="phase-value-didactic">Huevos nuevos</span></div>
             </div>
-            <p class="hint">Usa "Paso" para explicar un movimiento, o "Auto" para animar.</p>
           </div>
 
           <div class="card demo-visual reveal">
             <div class="demo-canvas">
-              <canvas id="canvas2d-didactic" aria-label="Simulacion didactica 2D"></canvas>
+              <canvas id="canvas2d-didactic" aria-label="Simulación didáctica 2D"></canvas>
             </div>
             <div class="demo-label">Mapa 2D con flechas de movimiento</div>
             <div class="legend">
               <div class="legend-item"><span class="legend-swatch nests"></span>Nidos (colores distintos)</div>
               <div class="legend-item"><span class="legend-swatch best"></span>Mejor nido (tono claro)</div>
-              <div class="legend-item"><span class="legend-swatch candidates"></span>Huevos nuevos (Levy)</div>
-              <div class="legend-item"><span class="legend-swatch select"></span>Seleccion aleatoria</div>
+              <div class="legend-item"><span class="legend-swatch candidates"></span>Huevos nuevos (color del nido)</div>
+              <div class="legend-item"><span class="legend-swatch select"></span>Selección aleatoria</div>
               <div class="legend-item"><span class="legend-swatch abandon"></span>Reemplazo por abandono</div>
+              <div class="legend-item"><span class="legend-swatch reject"></span>No mejora (rechazado)</div>
             </div>
           </div>
         </div>
@@ -420,31 +474,31 @@ print("best", best)</code></pre>
         <div class="section-header reveal">
           <h2>Demo en vivo 2D y 3D</h2>
           <p>
-            La demo muestra como los nidos buscan el minimo de una funcion. El mapa 2D es un mapa de
-            calor, y la vista 3D muestra la superficie. Puedes ajustar parametros y ver como cambia
+            La demo muestra cómo los nidos buscan el mínimo de una función. El mapa 2D es un mapa de
+            calor, y la vista 3D muestra la superficie. Puedes ajustar parámetros y ver cómo cambia
             el comportamiento.
           </p>
         </div>
         <div class="demo-grid">
           <div class="card demo-controls reveal">
             <h3>Controles</h3>
-            <label for="fn-select">Funcion objetivo</label>
+            <label for="fn-select">Función objetivo</label>
             <select id="fn-select">
               <option value="rastrigin" selected>Rastrigin</option>
               <option value="ackley">Ackley</option>
               <option value="sphere">Sphere</option>
             </select>
 
-            <label for="nests-input">Numero de nidos</label>
+            <label for="nests-input">Número de nidos</label>
             <input id="nests-input" type="number" min="10" max="60" step="1" value="28">
 
             <label for="pa-input">pa (probabilidad de abandono)</label>
             <input id="pa-input" type="number" min="0.05" max="0.5" step="0.05" value="0.25">
 
-            <label for="alpha-input">alpha (tamano de paso)</label>
+            <label for="alpha-input">alpha (tamaño de paso)</label>
             <input id="alpha-input" type="number" min="0.1" max="1.5" step="0.1" value="0.7">
 
-            <label for="speed-input">Velocidad (ms por iteracion)</label>
+            <label for="speed-input">Velocidad (ms por iteración)</label>
             <div class="range-row">
               <input id="speed-input" type="range" min="40" max="400" step="20" value="140">
               <span id="speed-value" class="range-value">140 ms</span>
@@ -456,15 +510,14 @@ print("best", best)</code></pre>
             </div>
 
             <div class="readout">
-              <div><span class="label">Iteracion</span><span id="iter-value">0</span></div>
+              <div><span class="label">Iteración</span><span id="iter-value">0</span></div>
               <div><span class="label">Mejor valor</span><span id="best-value">--</span></div>
             </div>
-            <p class="hint">Tip: prueba subir pa para ver mayor exploracion.</p>
           </div>
 
           <div class="card demo-visual reveal">
             <div class="demo-canvas">
-              <canvas id="canvas2d" aria-label="Mapa 2D de la funcion"></canvas>
+              <canvas id="canvas2d" aria-label="Mapa 2D de la función"></canvas>
             </div>
             <div class="demo-label">Mapa de calor 2D (nidos en color)</div>
           </div>

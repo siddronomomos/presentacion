@@ -468,7 +468,7 @@ pre {
 }
 
 .legend-swatch.candidates {
-  background: #1f5c8c;
+  background: conic-gradient(#e76f51, #2a9d8f, #264653, #e9c46a, #e76f51);
 }
 
 .legend-swatch.select {
@@ -478,6 +478,13 @@ pre {
 
 .legend-swatch.abandon {
   background: #8a9b98;
+}
+
+.legend-swatch.reject {
+  background:
+    linear-gradient(45deg, transparent 44%, #b64545 45%, #b64545 55%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, #b64545 45%, #b64545 55%, transparent 56%);
+  border: 1px solid rgba(182, 69, 69, 0.6);
 }
 
 .footer {

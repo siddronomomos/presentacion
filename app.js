@@ -73,12 +73,14 @@ const didacticState = {
   canvas2d: null,
   ctx2d: null,
   candidates: [],
+  selections: [],
   moves: [],
 };
 
 const DIDACTIC_PHASES = [
   { key: "generate", label: "Huevos nuevos" },
-  { key: "select", label: "Seleccion aleatoria" },
+  { key: "select-pick", label: "Elegir comparaciones" },
+  { key: "select-apply", label: "Comparar y reemplazar" },
   { key: "abandon", label: "Abandonar fraccion" },
   { key: "update", label: "Actualizar mejor" },
 ];
@@ -370,7 +372,7 @@ function resetDidactic() {
   if (!ui.fnSelectDidactic) return;
   didacticState.fnKey = ui.fnSelectDidactic.value;
   didacticState.fn = OBJECTIVE_FUNCTIONS[didacticState.fnKey].fn;
-  didacticState.nestsCount = clampInt(ui.nestsInputDidactic.value, 10, 60, 24);
+  didacticState.nestsCount = clampInt(ui.nestsInputDidactic.value, 1, 60, 24);
   didacticState.pa = clampFloat(ui.paInputDidactic.value, 0.05, 0.5, 0.25);
   didacticState.alpha = clampFloat(ui.alphaInputDidactic.value, 0.1, 1.5, 0.7);
   didacticState.speedMs = Number(ui.speedInputDidactic?.value || didacticState.speedMs);
@@ -390,6 +392,7 @@ function resetDidactic() {
   didacticState.nests = createInitialNestsDidactic(didacticState.nestsCount);
   didacticState.best = findBest(didacticState.nests);
   didacticState.candidates = [];
+  didacticState.selections = [];
   didacticState.moves = [];
 
   buildHeatmapDidactic();
@@ -451,8 +454,10 @@ function stepDidactic(time = performance.now()) {
   if (phase === 0) {
     generateDidacticCandidates(time);
   } else if (phase === 1) {
-    selectDidacticCandidates(time);
+    selectDidacticPick(time);
   } else if (phase === 2) {
+    selectDidacticApply(time);
+  } else if (phase === 3) {
     abandonDidacticNests(time);
   } else {
     finalizeDidacticIteration(time);
@@ -469,6 +474,7 @@ function generateDidacticCandidates(time) {
     from: { x: nests[i].x, y: nests[i].y },
     to: { x: candidate.x, y: candidate.y },
     type: "levy",
+    hue: candidate.hue,
   }));
 
   didacticState.candidates = candidates;
@@ -477,34 +483,108 @@ function generateDidacticCandidates(time) {
   startDidacticPhaseAnimation("generate", "Huevos nuevos", time);
 }
 
-function selectDidacticCandidates(time) {
+function selectDidacticPick(time) {
   const nests = didacticState.nests;
   const total = nests.length;
   const moves = [];
+  const selections = [];
 
   didacticState.candidates.forEach((candidate) => {
     const j = Math.floor(Math.random() * total);
-    const slotHue = nests[j].hue;
+    selections.push({
+      candidate,
+      targetIndex: j,
+      target: {
+        x: nests[j].x,
+        y: nests[j].y,
+        fitness: nests[j].fitness,
+      },
+    });
     moves.push({
       from: { x: nests[j].x, y: nests[j].y },
       to: { x: candidate.x, y: candidate.y },
       type: "select",
     });
-    if (candidate.fitness < nests[j].fitness) {
-      nests[j] = { ...candidate, hue: slotHue };
+  });
+
+  didacticState.selections = selections;
+  didacticState.moves = moves;
+  didacticState.phaseIndex = 2;
+  startDidacticPhaseAnimation("select-pick", "Elegir comparaciones", time);
+}
+
+function selectDidacticApply(time) {
+  const nests = didacticState.nests;
+  const moves = [];
+  const rejections = [];
+  const groups = new Map();
+
+  didacticState.selections.forEach((selection) => {
+    const { candidate, targetIndex, target } = selection;
+    const base = target || {
+      x: nests[targetIndex].x,
+      y: nests[targetIndex].y,
+      fitness: nests[targetIndex].fitness,
+    };
+    const gain = base.fitness - candidate.fitness;
+    if (gain > 0) {
+      if (!groups.has(targetIndex)) {
+        groups.set(targetIndex, { base, items: [] });
+      }
+      groups.get(targetIndex).items.push({ candidate, gain });
+    } else {
+      rejections.push({ candidate, base });
     }
   });
 
+  const totalApplyMoves = Array.from(groups.values()).reduce((sum, group) => sum + group.items.length, 0);
+  let order = 0;
+
+  groups.forEach((group, targetIndex) => {
+    const slotHue = nests[targetIndex].hue;
+    group.items.sort((a, b) => a.gain - b.gain);
+
+    let fromPoint = group.base;
+    group.items.forEach((item) => {
+      moves.push({
+        from: { x: fromPoint.x, y: fromPoint.y },
+        to: { x: item.candidate.x, y: item.candidate.y },
+        type: "select-apply",
+        hue: item.candidate.hue,
+        order,
+        total: totalApplyMoves,
+      });
+      order += 1;
+      fromPoint = item.candidate;
+    });
+
+    if (group.items.length) {
+      const bestCandidate = group.items[group.items.length - 1].candidate;
+      nests[targetIndex] = { ...bestCandidate, hue: slotHue };
+    }
+  });
+
+  rejections.forEach((item) => {
+    moves.push({
+      from: { x: item.base.x, y: item.base.y },
+      to: { x: item.candidate.x, y: item.candidate.y },
+      type: "select-reject",
+      hue: item.candidate.hue,
+    });
+  });
+
+  didacticState.selections = [];
   didacticState.moves = moves;
-  didacticState.phaseIndex = 2;
-  startDidacticPhaseAnimation("select", "Seleccion aleatoria", time);
+  didacticState.phaseIndex = 3;
+  startDidacticPhaseAnimation("select-apply", "Comparar y reemplazar", time);
 }
 
 function abandonDidacticNests(time) {
   const nests = didacticState.nests;
   const total = nests.length;
   const moves = [];
-  const abandonCount = Math.floor(didacticState.pa * total);
+  const rawAbandon = didacticState.pa * total;
+  const abandonCount = total === 1 && didacticState.pa > 0 ? 1 : Math.floor(rawAbandon);
 
   if (abandonCount > 0) {
     nests.sort((a, b) => b.fitness - a.fitness);
@@ -522,7 +602,7 @@ function abandonDidacticNests(time) {
 
   didacticState.candidates = [];
   didacticState.moves = moves;
-  didacticState.phaseIndex = 3;
+  didacticState.phaseIndex = 4;
   startDidacticPhaseAnimation("abandon", "Abandonar fraccion", time);
 }
 
@@ -677,13 +757,14 @@ function drawDidacticCandidates(ctx, width, height, progress) {
   const radius = 3.2 * dpr;
 
   ctx.save();
-  ctx.fillStyle = "rgba(31, 92, 140, 0.9)";
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
   ctx.lineWidth = 1 * dpr;
 
   if (didacticState.phaseKey === "generate" && didacticState.moves.length) {
     didacticState.moves.forEach((move) => {
       if (move.type !== "levy") return;
+      const hue = Number.isFinite(move.hue) ? move.hue : 200;
+      ctx.fillStyle = didacticColor(hue, 40, 0.9);
+      ctx.strokeStyle = didacticColor(hue, 22, 0.8);
       const x = lerp(move.from.x, move.to.x, progress);
       const y = lerp(move.from.y, move.to.y, progress);
       const [cx, cy] = toCanvasByBounds(x, y, width, height, didacticState.bounds);
@@ -691,13 +772,22 @@ function drawDidacticCandidates(ctx, width, height, progress) {
       ctx.arc(cx, cy, radius, 0, TAU);
       ctx.fill();
       ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 0.55, 0, TAU);
+      ctx.stroke();
     });
   } else {
     didacticState.candidates.forEach((candidate) => {
+      const hue = resolveDidacticHue(candidate, 0, didacticState.nests.length);
+      ctx.fillStyle = didacticColor(hue, 40, 0.9);
+      ctx.strokeStyle = didacticColor(hue, 22, 0.8);
       const [cx, cy] = toCanvasByBounds(candidate.x, candidate.y, width, height, didacticState.bounds);
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, TAU);
       ctx.fill();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 0.55, 0, TAU);
       ctx.stroke();
     });
   }
@@ -711,13 +801,26 @@ function drawDidacticMoves(ctx, width, height, progress) {
   const colors = {
     levy: "rgba(31, 92, 140, 0.85)",
     select: "rgba(31, 92, 140, 0.85)",
+    "select-apply": "rgba(31, 92, 140, 0.9)",
     abandon: "rgba(138, 155, 152, 0.8)",
+    "select-reject": "rgba(182, 69, 69, 0.9)",
   };
+  const applyMoves = didacticState.moves.filter((move) => move.type === "select-apply");
+  const applyCount = applyMoves.length;
 
   ctx.save();
   ctx.lineWidth = 1.4 * dpr;
 
   didacticState.moves.forEach((move) => {
+    if (move.type === "select-reject") {
+      ctx.setLineDash([]);
+      const [fx, fy] = toCanvasByBounds(move.from.x, move.from.y, width, height, didacticState.bounds);
+      const [tx, ty] = toCanvasByBounds(move.to.x, move.to.y, width, height, didacticState.bounds);
+      const color = colors[move.type];
+      drawArrow(ctx, fx, fy, tx, ty, color, dpr, progress);
+      drawRejectMarker(ctx, tx, ty, dpr, color);
+      return;
+    }
     if (move.type === "select") {
       ctx.setLineDash([6 * dpr, 6 * dpr]);
     } else {
@@ -726,7 +829,11 @@ function drawDidacticMoves(ctx, width, height, progress) {
     const [fx, fy] = toCanvasByBounds(move.from.x, move.from.y, width, height, didacticState.bounds);
     const [tx, ty] = toCanvasByBounds(move.to.x, move.to.y, width, height, didacticState.bounds);
     const color = colors[move.type] || colors.levy;
-    drawArrow(ctx, fx, fy, tx, ty, color, dpr, progress);
+    const localProgress =
+      move.type === "select-apply" && applyCount > 0
+        ? clampFloat((progress - (move.order ?? applyMoves.indexOf(move)) / applyCount) * applyCount, 0, 1, 0)
+        : progress;
+    drawArrow(ctx, fx, fy, tx, ty, color, dpr, localProgress);
     if (move.type === "select") {
       drawSelectionMarker(ctx, fx, fy, dpr, color);
     }
@@ -781,6 +888,19 @@ function drawSelectionMarker(ctx, x, y, dpr, color) {
   ctx.setLineDash([4 * dpr, 4 * dpr]);
   ctx.beginPath();
   ctx.arc(x, y, 8 * dpr, 0, TAU);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawRejectMarker(ctx, x, y, dpr, color) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.6 * dpr;
+  ctx.beginPath();
+  ctx.moveTo(x - 6 * dpr, y - 6 * dpr);
+  ctx.lineTo(x + 6 * dpr, y + 6 * dpr);
+  ctx.moveTo(x + 6 * dpr, y - 6 * dpr);
+  ctx.lineTo(x - 6 * dpr, y + 6 * dpr);
   ctx.stroke();
   ctx.restore();
 }
