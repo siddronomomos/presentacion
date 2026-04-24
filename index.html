@@ -393,8 +393,16 @@
     </section>
 
     <section id="demo-didactica" class="slide section demo didactic">
-      <div class="section-header reveal">
+      <div class="section-header reveal didactic-header">
         <h2>Simulación</h2>
+        <div class="legend didactic-legend">
+          <div class="legend-item"><span class="legend-swatch nests"></span>Nidos (colores distintos)</div>
+          <div class="legend-item"><span class="legend-swatch best"></span>Mejor nido (tono claro)</div>
+          <div class="legend-item"><span class="legend-swatch candidates"></span>Huevos nuevos (color del nido)</div>
+          <div class="legend-item"><span class="legend-swatch select"></span>Selección aleatoria</div>
+          <div class="legend-item"><span class="legend-swatch abandon"></span>Reemplazo por abandono</div>
+          <div class="legend-item"><span class="legend-swatch reject"></span>No mejora (rechazado)</div>
+        </div>
       </div>
       <div class="demo-grid didactic-grid">
         <div class="card demo-controls reveal">
@@ -407,17 +415,17 @@
           </select>
 
           <label for="nests-input-didactic">Número de nidos</label>
-          <input id="nests-input-didactic" type="number" min="1" max="60" step="1" value="24">
+          <input id="nests-input-didactic" type="number" value="24">
 
           <label for="pa-input-didactic">pa (probabilidad de abandono)</label>
-          <input id="pa-input-didactic" type="number" min="0.05" max="0.5" step="0.05" value="0.25">
+          <input id="pa-input-didactic" type="number" value="0.25">
 
           <label for="alpha-input-didactic">alpha (tamaño de paso)</label>
-          <input id="alpha-input-didactic" type="number" min="0.1" max="1.5" step="0.1" value="0.7">
+          <input id="alpha-input-didactic" type="number" value="0.7">
 
           <label for="speed-input-didactic">Latencia (ms por paso)</label>
           <div class="range-row">
-            <input id="speed-input-didactic" type="range" min="60" max="500" step="20" value="220">
+            <input id="speed-input-didactic" type="number" value="220">
             <span id="speed-value-didactic" class="range-value">220 ms</span>
           </div>
 
@@ -431,6 +439,9 @@
             <div><span class="label">Iteración</span><span id="iter-value-didactic">0</span></div>
             <div><span class="label">Mejor valor</span><span id="best-value-didactic">--</span></div>
             <div><span class="label">Fase</span><span id="phase-value-didactic">Huevos nuevos</span></div>
+            <button id="reset-progress-btn-didactic" class="btn ghost small readout-reset-btn" type="button">
+              Reiniciar iteración y pasos
+            </button>
           </div>
         </div>
 
@@ -438,15 +449,7 @@
           <div class="demo-canvas">
             <canvas id="canvas2d-didactic" aria-label="Simulación didáctica 2D"></canvas>
           </div>
-          <div class="demo-label">Mapa 2D con flechas de movimiento</div>
-          <div class="legend">
-            <div class="legend-item"><span class="legend-swatch nests"></span>Nidos (colores distintos)</div>
-            <div class="legend-item"><span class="legend-swatch best"></span>Mejor nido (tono claro)</div>
-            <div class="legend-item"><span class="legend-swatch candidates"></span>Huevos nuevos (color del nido)</div>
-            <div class="legend-item"><span class="legend-swatch select"></span>Selección aleatoria</div>
-            <div class="legend-item"><span class="legend-swatch abandon"></span>Reemplazo por abandono</div>
-            <div class="legend-item"><span class="legend-swatch reject"></span>No mejora (rechazado)</div>
-          </div>
+
         </div>
       </div>
     </section>
@@ -470,17 +473,17 @@
           </select>
 
           <label for="nests-input">Número de nidos</label>
-          <input id="nests-input" type="number" min="10" max="60" step="1" value="28">
+          <input id="nests-input" type="number" value="28">
 
           <label for="pa-input">pa (probabilidad de abandono)</label>
-          <input id="pa-input" type="number" min="0.05" max="0.5" step="0.05" value="0.25">
+          <input id="pa-input" type="number" value="0.25">
 
           <label for="alpha-input">alpha (tamaño de paso)</label>
-          <input id="alpha-input" type="number" min="0.1" max="1.5" step="0.1" value="0.7">
+          <input id="alpha-input" type="number" value="0.7">
 
           <label for="speed-input">Velocidad (ms por iteración)</label>
           <div class="range-row">
-            <input id="speed-input" type="range" min="40" max="400" step="20" value="140">
+            <input id="speed-input" type="number" value="140">
             <span id="speed-value" class="range-value">140 ms</span>
           </div>
 
@@ -517,6 +520,10 @@
       <span id="slide-current">1</span> / <span id="slide-total">1</span>
     </div>
     <button id="next-slide" class="slide-btn" type="button" aria-label="Diapositiva siguiente">&rarr;</button>
+  </div>
+
+  <div class="slide-index-corner" aria-live="polite" aria-label="Numero de diapositiva actual">
+    <span id="slide-current-corner">1</span> / <span id="slide-total-corner">1</span>
   </div>
 
   <script type="module" src="app.js"></script>

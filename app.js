@@ -94,6 +94,7 @@ const slideState = {
 function init() {
   cacheUI();
   setupSlides();
+  setupSlideControlsPeek();
   setupObservers();
   setup2D();
   setup3D();
@@ -126,6 +127,7 @@ function cacheUI() {
   ui.stepBtnDidactic = document.getElementById("step-btn-didactic");
   ui.toggleBtnDidactic = document.getElementById("toggle-btn-didactic");
   ui.resetBtnDidactic = document.getElementById("reset-btn-didactic");
+  ui.resetProgressBtnDidactic = document.getElementById("reset-progress-btn-didactic");
   ui.iterValueDidactic = document.getElementById("iter-value-didactic");
   ui.bestValueDidactic = document.getElementById("best-value-didactic");
   ui.phaseValueDidactic = document.getElementById("phase-value-didactic");
@@ -134,6 +136,8 @@ function cacheUI() {
   ui.nextSlide = document.getElementById("next-slide");
   ui.slideCurrent = document.getElementById("slide-current");
   ui.slideTotal = document.getElementById("slide-total");
+  ui.slideCurrentCorner = document.getElementById("slide-current-corner");
+  ui.slideTotalCorner = document.getElementById("slide-total-corner");
 }
 
 function setupSlides() {
@@ -142,6 +146,10 @@ function setupSlides() {
 
   if (ui.slideTotal) {
     ui.slideTotal.textContent = String(slideState.slides.length);
+  }
+
+  if (ui.slideTotalCorner) {
+    ui.slideTotalCorner.textContent = String(slideState.slides.length);
   }
 
   if (ui.prevSlide) {
@@ -172,6 +180,25 @@ function setupSlides() {
   showSlideByHash(true);
 }
 
+function setupSlideControlsPeek() {
+  if (!document.querySelector(".slide-controls")) return;
+
+  const revealZonePx = 120;
+
+  const updateControlsVisibility = (clientY) => {
+    const shouldShow = window.innerHeight - clientY <= revealZonePx;
+    document.body.classList.toggle("is-slide-controls-visible", shouldShow);
+  };
+
+  window.addEventListener("mousemove", (event) => {
+    updateControlsVisibility(event.clientY);
+  });
+
+  window.addEventListener("mouseleave", () => {
+    document.body.classList.remove("is-slide-controls-visible");
+  });
+}
+
 function showSlideByHash(isInitial) {
   const hash = window.location.hash;
   const id = hash ? hash.replace("#", "") : "";
@@ -196,6 +223,10 @@ function showSlide(index, options = {}) {
 
   if (ui.slideCurrent) {
     ui.slideCurrent.textContent = String(nextIndex + 1);
+  }
+
+  if (ui.slideCurrentCorner) {
+    ui.slideCurrentCorner.textContent = String(nextIndex + 1);
   }
 
   if (ui.prevSlide) {
@@ -342,8 +373,13 @@ function bindDidacticUI() {
     resetDidactic();
   });
 
+  ui.resetProgressBtnDidactic?.addEventListener("click", () => {
+    setDidacticRunning(false);
+    resetDidacticProgress();
+  });
+
   ui.speedInputDidactic?.addEventListener("input", () => {
-    didacticState.speedMs = Number(ui.speedInputDidactic.value);
+    didacticState.speedMs = parsePositiveValue(ui.speedInputDidactic.value, didacticState.speedMs);
     if (ui.speedValueDidactic) {
       ui.speedValueDidactic.textContent = `${didacticState.speedMs} ms`;
     }
@@ -372,10 +408,10 @@ function resetDidactic() {
   if (!ui.fnSelectDidactic) return;
   didacticState.fnKey = ui.fnSelectDidactic.value;
   didacticState.fn = OBJECTIVE_FUNCTIONS[didacticState.fnKey].fn;
-  didacticState.nestsCount = clampInt(ui.nestsInputDidactic.value, 1, 60, 24);
-  didacticState.pa = clampFloat(ui.paInputDidactic.value, 0.05, 0.5, 0.25);
-  didacticState.alpha = clampFloat(ui.alphaInputDidactic.value, 0.1, 1.5, 0.7);
-  didacticState.speedMs = Number(ui.speedInputDidactic?.value || didacticState.speedMs);
+  didacticState.nestsCount = parseCountValue(ui.nestsInputDidactic.value, 24);
+  didacticState.pa = parseFiniteValue(ui.paInputDidactic.value, 0.25);
+  didacticState.alpha = parseFiniteValue(ui.alphaInputDidactic.value, 0.7);
+  didacticState.speedMs = parsePositiveValue(ui.speedInputDidactic?.value, didacticState.speedMs);
   if (ui.speedValueDidactic) {
     ui.speedValueDidactic.textContent = `${didacticState.speedMs} ms`;
   }
@@ -396,6 +432,25 @@ function resetDidactic() {
   didacticState.moves = [];
 
   buildHeatmapDidactic();
+  updateDidacticReadout();
+  didacticState.needsRender2D = true;
+}
+
+function resetDidacticProgress() {
+  didacticState.iter = 0;
+  didacticState.lastStepTime = 0;
+  didacticState.phaseIndex = 0;
+  didacticState.phaseKey = "generate";
+  didacticState.phaseLabel = "Huevos nuevos";
+  didacticState.phaseAnimating = false;
+  didacticState.phaseStartTime = 0;
+  didacticState.phaseProgress = 1;
+  didacticState.nests = createInitialNestsDidactic(didacticState.nestsCount);
+  didacticState.candidates = [];
+  didacticState.selections = [];
+  didacticState.moves = [];
+  didacticState.best = findBest(didacticState.nests);
+
   updateDidacticReadout();
   didacticState.needsRender2D = true;
 }
@@ -930,7 +985,7 @@ function bindUI() {
   });
 
   ui.speedInput.addEventListener("input", () => {
-    state.speedMs = Number(ui.speedInput.value);
+    state.speedMs = parsePositiveValue(ui.speedInput.value, state.speedMs);
     ui.speedValue.textContent = `${state.speedMs} ms`;
   });
 
@@ -959,9 +1014,10 @@ function bindUI() {
 function resetSimulation() {
   state.fnKey = ui.fnSelect.value;
   state.fn = OBJECTIVE_FUNCTIONS[state.fnKey].fn;
-  state.nestsCount = clampInt(ui.nestsInput.value, 10, 60, 28);
-  state.pa = clampFloat(ui.paInput.value, 0.05, 0.5, 0.25);
-  state.alpha = clampFloat(ui.alphaInput.value, 0.1, 1.5, 0.7);
+  state.nestsCount = parseCountValue(ui.nestsInput.value, 28);
+  state.pa = parseFiniteValue(ui.paInput.value, 0.25);
+  state.alpha = parseFiniteValue(ui.alphaInput.value, 0.7);
+  state.speedMs = parsePositiveValue(ui.speedInput?.value, state.speedMs);
 
   state.range = computeRange(state.fn, 120);
   state.iter = 0;
@@ -1403,6 +1459,23 @@ function lerp(a, b, t) {
 
 function randomInRange(min, max) {
   return min + Math.random() * (max - min);
+}
+
+function parseFiniteValue(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function parsePositiveValue(value, fallback) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number <= 0) return fallback;
+  return number;
+}
+
+function parseCountValue(value, fallback) {
+  const number = Math.round(Number(value));
+  if (!Number.isFinite(number) || number < 1) return fallback;
+  return number;
 }
 
 function clampFloat(value, min, max, fallback) {

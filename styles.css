@@ -370,6 +370,23 @@ pre {
   grid-template-columns: minmax(240px, 0.7fr) minmax(320px, 1.2fr);
 }
 
+.didactic-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.didactic-header h2 {
+  margin: 0;
+}
+
+.didactic-legend {
+  margin-top: 0;
+  width: min(520px, 58vw);
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+}
+
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -427,6 +444,11 @@ pre {
   margin-right: 0.5rem;
 }
 
+.readout-reset-btn {
+  width: 100%;
+  margin-top: 0.3rem;
+}
+
 .hint {
   font-size: 0.85rem;
   color: var(--muted);
@@ -459,7 +481,11 @@ pre {
 }
 
 .didactic .demo-canvas {
-  height: 420px;
+  height: auto;
+  width: 90%;
+  max-width: none;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
 }
 
 .demo-canvas canvas {
@@ -545,7 +571,7 @@ pre {
   position: fixed;
   bottom: 1.2rem;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 18px);
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -555,6 +581,17 @@ pre {
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   z-index: 6;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+}
+
+body.is-slide-controls-visible .slide-controls {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
 }
 
 .slide-btn {
@@ -587,6 +624,22 @@ pre {
   font-weight: 600;
   color: var(--muted);
   min-width: 90px;
+  text-align: center;
+}
+
+.slide-index-corner {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 7;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(244, 239, 230, 0.92);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  color: var(--muted);
+  font-weight: 600;
+  min-width: 74px;
   text-align: center;
 }
 
@@ -627,6 +680,16 @@ pre {
     grid-template-columns: 1fr;
   }
 
+  .didactic-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .didactic-legend {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
   .top-nav {
     flex-direction: column;
     align-items: flex-start;
@@ -645,5 +708,10 @@ pre {
 
   .slide-count {
     min-width: auto;
+  }
+
+  .slide-index-corner {
+    right: 0.8rem;
+    bottom: 0.8rem;
   }
 }
