@@ -99,7 +99,7 @@
               peores en comparaciones locales, lo que evita un crecimiento descontrolado de población.
             </p>
           </div>
-          <figure class="section-media reveal">
+          <figure class="section-media reveal variants-figure">
             <img src="assets/cuckoo-nest.svg" alt="Ilustración estilizada de un nido con huevos">
             <figcaption>Nidos = soluciones. Huevos = nuevas propuestas.</figcaption>
           </figure>
@@ -390,12 +390,24 @@ print("best", best)</code></pre>
         <div class="section-grid">
           <div class="section-text reveal">
             <h2>Variantes y extensiones</h2>
+            <p>
+              Las variantes de CS nacen para adaptarse a tipos de variables, restricciones y objetivos
+              múltiples. En la práctica, se ajustan el tipo de representación y la forma de generar
+              nuevos huevos para mantener un buen equilibrio entre exploración y explotación.
+            </p>
+            <h3>Familias de variantes</h3>
             <ul>
               <li>Binary Cuckoo Search para variables discretas.</li>
               <li>Multiobjective CS con frente de Pareto.</li>
               <li>CS adaptativo con ajuste dinámico de alpha y pa.</li>
               <li>Híbridos con búsqueda local o gradiente.</li>
               <li>Versiones con nichos para mantener diversidad.</li>
+            </ul>
+            <h3>Extensiones comunes</h3>
+            <ul>
+              <li>CS con restricciones (penalizaciones o reparadores).</li>
+              <li>CS memético: CS + búsqueda local intensiva.</li>
+              <li>CS con elite preservation para asegurar calidad estable.</li>
             </ul>
           </div>
           <div class="section-text reveal">
@@ -405,8 +417,16 @@ print("best", best)</code></pre>
               <li>Selección de características y ajuste de hiperparámetros.</li>
               <li>Ruteo, calendarización y problemas combinatorios.</li>
               <li>Segmentación y restauración de imágenes.</li>
+              <li>Diseño de antenas, filtros y redes de comunicación.</li>
+              <li>Planeación de energía y despacho económico.</li>
             </ul>
-            
+            <h3>Checklist de implementación</h3>
+            <ul>
+              <li>Normaliza el dominio de variables antes de aplicar Levy.</li>
+              <li>Define límites claros y aplica recorte por dimensión.</li>
+              <li>Controla la tasa de reemplazo con <span class="badge">pa</span>.</li>
+              <li>Evalúa con el mismo presupuesto de iteraciones en comparativas.</li>
+            </ul>
           </div>
         </div>
       </section>

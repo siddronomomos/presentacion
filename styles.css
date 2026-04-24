@@ -231,6 +231,7 @@ img {
   box-shadow: var(--shadow);
 }
 
+
 .section-media figcaption {
   font-size: 0.9rem;
   color: var(--muted);
